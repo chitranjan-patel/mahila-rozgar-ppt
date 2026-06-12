@@ -1,0 +1,6 @@
+*.pyc
+__pycache__/
+*.pptx
+*.egg-info/
+.DS_Store
+Thumbs.db

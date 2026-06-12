@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI & Digital Marketing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+Devanagari:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004b93;
+            --secondary: #007bff;
+            --light: #f4f8fb;
+            --dark: #2c3e50;
+            --white: #ffffff;
+            --accent: #e1effe;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Noto Sans Devanagari', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            color: var(--dark);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+        }
+
+        .slider-container {
+            width: 100vw; height: 100vh; position: relative; overflow: hidden; 
+            background: var(--white);
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .slide {
+            position: absolute; top: 0; left: 100%; width: 100%; height: 100%; display: flex;
+            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide.active { left: 0; }
+        .slide.prev { left: -100%; }
+
+        .slide-content-wrapper {
+            width: 100%; height: 100%; display: flex; flex-direction: row;
+        }
+
+        .text-section {
+            flex: 1; padding: 3rem 4rem; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto; z-index: 2;
+            background: var(--white);
+        }
+
+        /* PREMIUM IMAGE SECTION WITH AMBIENT BLUR */
+        .image-section {
+            flex: 1.2;
+            position: relative;
+            overflow: hidden;
+            background-color: #000;
+        }
+        
+        .img-blur {
+            position: absolute;
+            top: -10%; left: -10%; right: -10%; bottom: -10%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(30px) brightness(0.6);
+            z-index: 0;
+            transform: scale(1.1);
+        }
+
+        .img-front {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 1;
+            transform: scale(0.92); /* Makes it float beautifully */
+            filter: drop-shadow(0 25px 40px rgba(0,0,0,0.5));
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        
+        h1, h2 { 
+            background: linear-gradient(135deg, var(--primary) 0%, #00a8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.4;
+            padding-bottom: 5px; /* prevents clipping of gradient text */
+            font-size: 3.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+        
+        h2 { font-size: 2.5rem; }
+        
+        h3 { color: var(--secondary); font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
+        
+        h4 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            margin-top: 1.5rem;
+            border-bottom: 2px dashed #eee;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #444;
+        }
+
+        ul { list-style-type: none; margin-bottom: 1.5rem; }
+        ul li { 
+            position: relative; 
+            padding: 0.8rem 1rem 0.8rem 2.5rem; 
+            margin-bottom: 0.8rem; 
+            font-size: 1.05rem; 
+            color: var(--dark); 
+            background: #f8faff; 
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+        ul li:hover {
+            transform: translateX(5px);
+        }
+        ul li::before { 
+            content: '✔'; 
+            color: var(--secondary); 
+            position: absolute; 
+            left: 0.8rem; 
+            font-weight: bold; 
+        }
+.tagline {
+            display: inline-block; background: var(--primary); color: var(--white);
+            padding: 1rem 2rem; border-radius: 50px; font-size: 1rem; font-weight: 600; white-space: nowrap;
+            box-shadow: 0 10px 20px rgba(0,75,147,0.2);
+        }
+
+        .demo-box {
+            background: var(--light); border-left: 6px solid var(--secondary);
+            padding: 1.5rem; border-radius: 0 12px 12px 0; font-size: 1.05rem; color: var(--primary); font-weight: 600;
+        }
+
+        .controls { position: absolute; bottom: 1.5rem; right: 3rem; display: flex; gap: 1rem; z-index: 1000; }
+        button {
+            background: var(--white); color: var(--primary); border: 2px solid var(--primary);
+            width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s;
+            display: flex; justify-content: center; align-items: center;
+        }
+        button:hover { background: var(--primary); color: var(--white); transform: translateY(-3px); }
+        .slide-counter {
+            position: absolute; bottom: 1.5rem; left: 3rem; font-size: 1.2rem; color: var(--dark); font-weight: 600;
+            background: var(--white); padding: 0.5rem 1.5rem; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container" id="slider">
+
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide1.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide1.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h1>AI और Digital Marketing से महिलाओं के लिए रोजगार के नए अवसर</h1>
+                    <h3 class="colorful-subtitle" style="font-size: 1.6rem; margin-bottom: 1.5rem; font-weight: 700;">
+    <span style="color: #e91e63;">सीखें</span>
+    <span style="color: #bdc3c7; margin: 0 8px;">•</span>
+    <span style="color: #ff9800;">सिखाएँ</span>
+    <span style="color: #bdc3c7; margin: 0 8px;">•</span>
+    <span style="color: #4caf50;">कमाएँ</span>
+    <span style="color: #bdc3c7; margin: 0 8px;">•</span>
+    <span style="color: #9c27b0;">आत्मनिर्भर बनें</span>
+</h3>
+                    <div class="tagline">तकनीक से सशक्त महिला, आत्मनिर्भर परिवार और विकसित समाज</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide2.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide2.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>आज की डिजिटल दुनिया</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">डिजिटल तकनीक ने सीखने, कमाने और व्यवसाय करने के तरीके बदल दिए हैं।</h3>
+                    <h4>🌐 इंटरनेट और स्मार्टफोन का बढ़ता उपयोग</h4>
+                    <p>• आज अधिकांश लोग मोबाइल और इंटरनेट का उपयोग कर रहे हैं।</p>
+                    <p>• जानकारी, शिक्षा और व्यापार तेजी से ऑनलाइन हो रहे हैं。</p>
+                    <h4 style="margin-top:1rem;">📱 सोशल मीडिया का प्रभाव</h4>
+                    <p>• Facebook, Instagram और WhatsApp लाखों लोगों तक पहुँचने का आसान माध्यम हैं।</p>
+                    <p>• छोटे व्यवसाय भी सोशल मीडिया से अपने ग्राहकों तक पहुँच रहे हैं।</p>
+                    <div class="demo-box" style="margin-top: 1.5rem;">💡 "डिजिटल ज्ञान आज के समय की सबसे बड़ी शक्ति है।"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide3.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide3.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>AI क्या है? (Artificial Intelligence)</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">AI एक स्मार्ट तकनीक है जो इंसानों की तरह सोचने और काम करने में सहायता करती है।</h3>
+                    <h4>⚡ AI के कार्य</h4>
+                    <ul>
+                        <li>प्रश्नों के उत्तर देना और कंटेंट लिखना</li>
+                        <li>पोस्ट और डिजाइन बनाना</li>
+                        <li>भाषा अनुवाद करना</li>
+                    </ul>
+                    <h4>🌟 महिलाओं के लिए फायदे</h4>
+                    <ul>
+                        <li style="color: green;">समय और पैसों की बचत</li>
+                        <li style="color: green;">नए रोजगार और सीखने के अवसर</li>
+                    </ul>
+                    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                        <span class="tagline" style="font-size: 1rem; padding: 0.5rem 1rem;">ChatGPT</span>
+                        <span class="tagline" style="font-size: 1rem; padding: 0.5rem 1rem;">Google Gemini</span>
+                        <span class="tagline" style="font-size: 1rem; padding: 0.5rem 1rem;">Canva AI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide4.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide4.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>AI महिलाओं के लिए क्यों महत्वपूर्ण है?</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">सीखने, काम करने और आत्मनिर्भर बनने के नए अवसर</h3>
+                    <h4>🏠 घर बैठे काम करने की सुविधा</h4>
+                    <p>AI की मदद से घर से ही कई डिजिटल कार्य संभव हैं। समय और संसाधनों की बचत होती है।</p>
+                    <h4 style="margin-top:1rem;">💰 कम लागत में व्यवसाय</h4>
+                    <p>केवल मोबाइल और इंटरनेट से शुरुआत की जा सकती है। बड़े निवेश की आवश्यकता नहीं।</p>
+                    <h4 style="margin-top:1rem;">🌟 AI से महिलाएं क्या कर सकती हैं?</h4>
+                    <ul>
+                        <li>सोशल मीडिया पोस्ट और व्यवसाय का प्रचार</li>
+                        <li>पोस्टर और लोगो डिज़ाइन</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide5.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide5.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>ChatGPT: आपका डिजिटल सहायक</h2>
+                    <h4>यह कैसे काम करता है:</h4>
+                    <ul>
+                        <li>📝 लंबी पोस्ट और कंटेंट को सेकंडों में लिखता है।</li>
+                        <li>❓ सवालों के आसान और सटीक जवाब देता है।</li>
+                        <li>💡 व्यवसाय को बढ़ाने के लिए नए विचार (Ideas) देता है।</li>
+                        <li>📧 ग्राहकों के लिए प्रोफेशनल मैसेज तैयार करता है।</li>
+                    </ul>
+                    <div class="demo-box" style="margin-top: 1.5rem;">
+                        <strong>💻 Demo:</strong><br>
+                        "मेरे अचार व्यवसाय के लिए Facebook Post लिखो"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide6.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide6.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>Canva AI से डिजाइन बनाना</h2>
+                    <h4>📌 आप क्या-क्या बना सकते हैं:</h4>
+                    <ul>
+                        <li>आकर्षक Poster Design और Logo Design</li>
+                        <li>व्यवसाय के लिए Banner Design और Social Media Post</li>
+                        <li>त्योहारों के लिए Festival Poster</li>
+                    </ul>
+                    <h4>🌟 इसके मुख्य फायदे:</h4>
+                    <ul>
+                        <li>इस्तेमाल में बहुत आसान (कोई डिजाइनिंग कोर्स जरूरी नहीं)</li>
+                        <li>मिनटों में तैयार और Professional लुक</li>
+                    </ul>
+                    <div class="tagline" style="margin-top: 1rem; background: green;">💰 Income: ₹100–500 प्रति डिजाइन</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide7.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide7.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>Facebook Business Page</h2>
+                    <h4>📌 आप क्या-क्या कर सकते हैं:</h4>
+                    <ul>
+                        <li>व्यवसाय की प्रोफेशनल ऑनलाइन पहचान बनाना (Virtual Shop)</li>
+                        <li>अपने उत्पादों और सेवाओं का मुफ्त में प्रचार करना</li>
+                        <li>ग्राहकों के सीधे सवालों का जवाब देना</li>
+                        <li>नए Offers और Updates को तुरंत ग्राहकों तक पहुँचाना</li>
+                    </ul>
+                    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                        <span class="tagline" style="font-size: 1rem; padding: 0.5rem 1rem;">Local Reach</span>
+                        <span class="tagline" style="font-size: 1rem; padding: 0.5rem 1rem;">Brand Awareness</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide8.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide8.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>Instagram Business Account</h2>
+                    <h4>📌 मुख्य विशेषताएं:</h4>
+                    <ul>
+                        <li>🎥 आकर्षक Reels बनाकर लाखों नए लोगों तक पहुँचना</li>
+                        <li>📸 बेहतरीन फोटो के जरिए उत्पादों (Products) का Showcase करना</li>
+                        <li>📱 Stories के माध्यम से दैनिक अपडेट्स और ऑफर्स दिखाना</li>
+                        <li>❤️ ग्राहकों के साथ Engagement बढ़ाना</li>
+                    </ul>
+                    <div class="tagline" style="margin-top: 1rem; background: #e1306c;">Free Marketing & Online Sales</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide9.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide9.png');"></div>
+                </div>
+                <div class="text-section">
+                    <h2>WhatsApp Business</h2>
+                    <h4>📌 इसके पावरफुल टूल्स:</h4>
+                    <ul>
+                        <li>🛒 <b>Product Catalog:</b> अपने उत्पादों की लिस्ट दिखाना</li>
+                        <li>🤖 <b>Auto Reply:</b> ग्राहकों का तुरंत स्वचालित जवाब देना</li>
+                        <li>⚡ <b>Quick Replies:</b> बार-बार पूछे जाने वाले सवालों के शार्टकट</li>
+                        <li>📢 <b>Broadcast:</b> एक क्लिक में 250+ ग्राहकों तक नया ऑफर भेजना</li>
+                    </ul>
+                    <div class="tagline" style="margin-top: 1rem; background: #25d366;">Direct Contact & Easy Orders</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide10.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide10.png');"></div>
+                </div>
+                <div class="text-section">
+
+                    <h2>डिजिटल मार्केटिंग क्या है?</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">सही ग्राहकों तक पहुँचने की सबसे आधुनिक और प्रभावी तकनीक</h3>
+                    <h4>📌 यह क्यों जरूरी है?</h4>
+                    <ul>
+                        <li>पारंपरिक मार्केटिंग (अखबार, पर्चे) के मुकाबले यह बहुत सस्ती और सटीक है।</li>
+                        <li>आप केवल उन लोगों तक पहुँच सकते हैं जो आपके उत्पाद (Product) में सच में रुचि रखते हैं।</li>
+                        <li>कम बजट में व्यवसाय और बिक्री (Sales) को तेजी से बढ़ाना संभव है।</li>
+                        <li>अपनी स्थानीय दुकान (Local Shop) को एक ऑनलाइन ब्रांड (Online Brand) में बदल सकते हैं।</li>
+                    </ul>
+                    <div class="demo-box" style="margin-top: 1.5rem;">
+                        💡 <b>Example:</b> Facebook Ads, Instagram Ads, और Google My Business के ज़रिए ग्राहकों को सीधे आकर्षित करना।
+                    </div>
+
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide11.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide11.png');"></div>
+                </div>
+                <div class="text-section">
+
+                    <h2>5 KM Radius Ads (स्थानीय विज्ञापन)</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">अपने आस-पास के ग्राहकों को ऑनलाइन खोजें</h3>
+                    <h4>📌 यह कैसे काम करता है?</h4>
+                    <ul>
+                        <li>📍 <b>Hyper-Local Targeting:</b> अपनी दुकान या व्यवसाय के 5 किलोमीटर के दायरे में ही विज्ञापन दिखाना।</li>
+                        <li>💰 <b>बहुत कम बजट:</b> मात्र ₹100-200 प्रति दिन के बजट में रोज़ाना 1000 से 2000 लोगों तक पहुँचना।</li>
+                        <li>🏪 <b>किनके लिए फायदेमंद:</b> बुटीक, ब्यूटी पार्लर, ट्यूशन सेंटर और बेकरी जैसे छोटे व्यवसायों के लिए अत्यंत असरदार।</li>
+                        <li>👥 <b>सीधा संपर्क:</b> आस-पास के लोग विज्ञापन देखकर सीधे आपकी दुकान पर आ सकते हैं या WhatsApp पर आर्डर दे सकते हैं।</li>
+                    </ul>
+                    <div class="tagline" style="margin-top: 1rem;">Local Customers, Better Reach & Fast Sales</div>
+
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide12.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide12.png');"></div>
+                </div>
+                <div class="text-section">
+
+                    <h2>रोजगार के नए और बेहतरीन अवसर</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">डिजिटल युग में घर बैठे काम करने के स्मार्ट तरीके</h3>
+                    <ul>
+                        <li>🎨 <b>Graphic Designer:</b> Canva का उपयोग करके छोटे दुकानदारों के लिए पोस्टर, लोगो और बैनर बनाना।</li>
+                        <li>📱 <b>Social Media Manager:</b> अन्य व्यवसायों (Doctors, Boutiques) के Instagram और Facebook पेज सँभालना।</li>
+                        <li>📈 <b>Local Ad Expert:</b> स्थानीय व्यवसायों के लिए Facebook/Instagram पर विज्ञापन (Ads) चलाना।</li>
+                        <li>✍️ <b>Content Creator:</b> सोशल मीडिया के लिए आकर्षक पोस्ट लिखना और डिज़ाइन करना।</li>
+                        <li>💬 <b>WhatsApp Marketer:</b> कैटलॉग बनाना और ग्राहकों को ऑफर्स के ब्रॉडकास्ट भेजना।</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide13.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide13.png');"></div>
+                </div>
+                <div class="text-section">
+
+                    <h2>कमाई के संभावित स्रोत (Income)</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">यदि आप घर बैठे काम करती हैं, तो कितनी कमाई हो सकती है?</h3>
+                    <ul>
+                        <li>💰 <b>सोशल मीडिया मैनेजमेंट:</b> यदि आप 5 ग्राहकों का पेज संभालती हैं (₹2000 प्रति ग्राहक) = <b>₹10,000 / माह</b></li>
+                        <li>💰 <b>डिजिटल एडवरटाइजिंग:</b> 3 ग्राहकों के लिए एड्स चलाना (₹3000 प्रति कैंपेन) = <b>₹9,000 / माह</b></li>
+                        <li>💰 <b>पोस्टर डिज़ाइनिंग:</b> महीने में 20 पोस्टर बनाना (₹200 प्रति पोस्टर) = <b>₹4,000 / माह</b></li>
+                    </ul>
+                    <p style="font-size: 1.15rem; margin-top: 1.5rem; font-weight: 600; color: var(--primary);">
+                        कुल मिलाकर एक महिला पार्ट-टाइम काम करके भी घर बैठे आसानी से <br><span style="font-size: 1.8rem; color: var(--secondary);">₹15,000 से ₹25,000</span> प्रति माह कमा सकती है।
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide14.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide14.png');"></div>
+                </div>
+                <div class="text-section">
+
+                    <h2>सफलता की प्रेरणादायक कहानी</h2>
+                    <h3 style="color: var(--dark); font-weight: normal;">📌 एक ग्रामीण महिला की सफलता:</h3>
+                    <ul>
+                        <li>👩🏻 एक महिला ने सिलाई/अचार का छोटा सा व्यवसाय शुरू किया।</li>
+                        <li>📱 AI और Digital Marketing सीखकर अपना Facebook Page बनाया।</li>
+                        <li>🤖 ChatGPT से बढ़िया पोस्ट लिखवाई और Canva से सुंदर पोस्टर बनाए।</li>
+                        <li>📍 5 KM Radius में Ads चलाए जिससे आस-पास के लोग ग्राहक बन गए।</li>
+                        <li>📈 आज उनकी आय कई गुना बढ़ चुकी है और वे आत्मनिर्भर हैं!</li>
+                    </ul>
+                    <div class="demo-box" style="margin-top: 1.5rem; text-align: center;">
+                        📢 <b>"सीखने की शुरुआत ही सफलता की पहली सीढ़ी है।"</b>
+                    </div>
+
+                </div>
+
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="image-section">
+                    <div class="img-blur" style="background-image: url('images/slide15.png');"></div>
+                    <div class="img-front" style="background-image: url('images/slide15.png');"></div>
+                </div>
+                <div class="text-section">
+
+                    <h2>निष्कर्ष (सफलता की ओर पहला कदम)</h2>
+                    <ul>
+                        <li>✔ <b>नई तकनीक अपनाएं:</b> आज की दुनिया में जिसके पास डिजिटल कौशल है, सफलता उसी के कदम चूमती है।</li>
+                        <li>✔ <b>शुरुआत करें:</b> सीखने की कोई उम्र नहीं होती और आगे बढ़ने का कोई एक रास्ता नहीं होता।</li>
+                        <li>✔ <b>झिझक छोड़ें:</b> अपनी झिझक को पीछे छोड़ें, मोबाइल का सही उपयोग करें और अपने सपनों को उड़ान दें।</li>
+                        <li>✔ <b>आत्मनिर्भर बनें:</b> अपने और अपने परिवार के लिए एक मजबूत आर्थिक आधार (Financial Base) तैयार करें।</li>
+                    </ul>
+                    <div class="demo-box" style="margin-top: 2rem; text-align: center; font-size: 1.2rem;">
+                        आइए, <b>AWO</b> के साथ मिलकर <span style="color: var(--secondary);">'आत्मनिर्भर भारत'</span> और <span style="color: var(--secondary);">'सशक्त महिला'</span> के सपने को साकार करें।<br>
+                        <b>धन्यवाद!</b>
+                    </div>
+
+                </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="slide-counter"><span id="current">1</span> / 15</div>
+    <div class="controls">
+        <button onclick="prevSlide()">❮</button>
+        <button onclick="nextSlide()">❯</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('current');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active', 'prev');
+                if (i === index) slide.classList.add('active');
+                else if (i < index) slide.classList.add('prev');
+            });
+            counter.innerText = index + 1;
+        }
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; showSlide(currentSlide); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; showSlide(currentSlide); } }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+    </script>
+</body>
+</html>
